@@ -1,0 +1,10 @@
+{% extends 'purecure/base.html' %}
+{% block title %}Edit {{ title }} · PureCure{% endblock %}
+{% block content %}
+<section class="heading"><p>{{ title|upper }}</p><h1>{% if form_heading %}{{ form_heading }}{% elif instance %}Edit record #{{ instance.pk }}{% else %}{{ title }}{% endif %}</h1><span>{% if form_description %}{{ form_description }}{% elif instance %}Update the fields below and save your changes.{% else %}Enter the details below.{% endif %}</span></section>
+<section class="panel edit-panel"><form method="post" class="edit-form">{% csrf_token %}
+{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+{% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+<div class="form-actions"><button type="submit" class="save-button">{% if submit_label %}{{ submit_label }}{% elif instance %}Save changes{% else %}Save {{ title|lower }}{% endif %}</button><a href="{% url 'records' table_name %}">Cancel</a></div>
+</form></section>
+{% endblock %}

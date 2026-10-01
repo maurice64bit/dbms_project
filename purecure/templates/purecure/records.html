@@ -1,0 +1,13 @@
+{% extends 'purecure/base.html' %}
+{% block title %}{{ title }} · PureCure{% endblock %}
+{% block content %}
+<section class="heading"><p>DATABASE RECORDS</p><h1>{{ title }}</h1><span>{% if query %}Search results for “{{ query }}”{% else %}Showing up to 100 records, newest first.{% endif %}</span></section>
+<section class="panel"><div class="panel-title"><div><p>{{ title|upper }}</p><h2>All records</h2></div><div class="record-actions">{% if can_record_sale %}<a class="action-button" href="{% url 'record_sale' %}">Prepare sale</a>{% endif %}{% if can_add %}{% if table_name == 'purchases' %}<a class="action-button" href="{% url 'record_purchase' %}">Record purchase</a>{% else %}<a class="action-button" href="{% url 'add_record' table_name %}">{% if table_name == 'customers' %}Add customer{% elif table_name == 'medicines' %}Add medicine{% elif table_name == 'suppliers' %}Add supplier{% elif table_name == 'employees' %}Add employee{% elif table_name == 'medicine-categories' %}Add category{% else %}Add record{% endif %}</a>{% endif %}{% endif %}</div></div>
+<form method="get" class="lookup-form"><label for="record-search">Search {{ title|lower }}</label><input id="record-search" name="q" value="{{ query }}" placeholder="Search by name, number, status, or details"><button class="save-button" type="submit">Search</button>{% if query %}<a href="{% url 'records' table_name %}">Clear search</a>{% endif %}</form>
+<div class="table-wrap"><table><thead><tr>{% for header in headers %}<th>{{ header }}</th>{% endfor %}{% if can_edit or table_name == 'sales' %}<th>Action</th>{% endif %}</tr></thead><tbody>
+{% if table_name == 'sales' %}{% for sale in sale_rows %}<tr><td>{{ sale.sale_id }}</td><td>{% if sale.customer %}{{ sale.customer.first_name }} {{ sale.customer.last_name }}{% else %}Walk-in{% endif %}</td><td>{{ sale.employee.username }}</td><td>{{ sale.sale_date|date:'d M Y H:i' }}</td><td>{{ sale.total_amount }}</td><td>{{ sale.status }}</td><td><a class="edit-link" href="{% url 'sale_receipt' sale.sale_id %}">Receipt</a>{% if can_take_payment and sale.status == 'Pending Payment' %} · <a class="edit-link" href="{% url 'take_payment' sale.sale_id %}">Take payment</a>{% endif %}</td></tr>{% empty %}<tr><td colspan="20" class="empty">No {{ title|lower }} found.</td></tr>{% endfor %}
+{% else %}{% for row in rows %}<tr>{% for cell in row.cells %}<td>{{ cell }}</td>{% endfor %}{% if can_edit %}<td><a class="edit-link" href="{% url 'edit_record' table_name row.pk %}">Edit</a></td>{% endif %}</tr>
+{% empty %}<tr><td colspan="20" class="empty">No {{ title|lower }} found.</td></tr>{% endfor %}
+{% endif %}
+</tbody></table></div></section>
+{% endblock %}

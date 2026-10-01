@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}PureCure Pharmacy{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'purecure/css/style.css' %}">
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar"><a class="brand" href="{% url 'dashboard' %}"><b>+</b> PureCure</a>
+            <p class="role">{{ employee.role.role_name }}</p>
+            <nav>
+                <a href="{% url 'dashboard' %}">Overview</a>
+                {% for item in nav_items %}
+                    <a href="{% url 'records' item.slug %}" class="{% if table_name == item.slug %}active{% endif %}">{{ item.label }}</a>
+                {% endfor %}
+            </nav>
+            <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="logout">Sign out</button>
+            </form>
+        </aside>
+        <main>
+            <header>
+                <div><strong>{{ employee.first_name }} {{ employee.last_name }}</strong><span>Staff workspace</span>
+                </div><time>{% now "D, d M Y" %}</time>
+            </header>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+
+</html>

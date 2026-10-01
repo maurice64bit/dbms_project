@@ -1,0 +1,8 @@
+{% extends 'purecure/base.html' %}
+{% block title %}Take payment · PureCure{% endblock %}
+{% block content %}
+<section class="heading"><p>CASHIER</p><h1>Complete payment for receipt #{{ sale.sale_id }}</h1><span>Confirm payment to release the medicine and update stock.</span></section>
+<section class="panel edit-panel"><div class="receipt-total"><span>Amount due</span><strong>Shs {{ sale.total_amount|floatformat:2 }}</strong></div><p>{% if sale.customer %}{{ sale.customer.first_name }} {{ sale.customer.last_name }}{% else %}Walk-in customer{% endif %}</p>
+<form method="post" class="edit-form">{% csrf_token %}{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}<small class="payment-hint">If the customer gives more than the total, the change due will appear on the paid receipt.</small>
+{% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}<div class="form-actions"><button type="submit" class="save-button">Confirm payment and release</button><a href="{% url 'sale_receipt' sale.sale_id %}">Back to receipt</a></div></form></section>
+{% endblock %}

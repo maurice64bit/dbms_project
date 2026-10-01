@@ -1,0 +1,14 @@
+{% extends 'purecure/base.html' %}
+{% block title %}Receipt #{{ sale.sale_id }} · PureCure{% endblock %}
+{% block content %}
+<section class="heading no-print"><p>SALE RECEIPT</p><h1>Receipt #{{ sale.sale_id }}</h1><span>Prepared {{ sale.sale_date|date:'d M Y, H:i' }} · {{ sale.status }}</span></section>
+<section class="panel receipt">
+<div class="receipt-head"><div><h2>PureCure Pharmacy</h2><p>Medicine sale receipt</p></div><strong>#{{ sale.sale_id }}</strong></div>
+<div class="receipt-meta"><div><small>Customer</small><strong>{% if sale.customer %}{{ sale.customer.first_name }} {{ sale.customer.last_name }}{% else %}Walk-in customer{% endif %}</strong></div><div><small>Prepared by</small><strong>{{ sale.employee.first_name }} {{ sale.employee.last_name }}</strong></div><div><small>Date</small><strong>{{ sale.sale_date|date:'d M Y, H:i' }}</strong></div></div>
+<div class="table-wrap"><table><thead><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Unit price</th><th>Subtotal</th></tr></thead><tbody>{% for item in items %}<tr><td>{{ item.medicine.medicine_name }}</td><td>{{ item.batch.batch_number }}</td><td>{{ item.quantity }}</td><td>Shs {{ item.unit_price|floatformat:2 }}</td><td>Shs {{ item.subtotal|floatformat:2 }}</td></tr>{% endfor %}</tbody></table></div>
+<div class="receipt-total"><span>Total due</span><strong>Shs {{ sale.total_amount|floatformat:2 }}</strong></div>
+{% if payment %}<div class="receipt-meta payment-meta"><div><small>Payment reference</small><strong>{{ payment.reference_number }}</strong></div><div><small>Amount received</small><strong>Shs {{ payment.amount|floatformat:2 }}</strong></div><div><small>Change due</small><strong>Shs {{ change_due|floatformat:2 }}</strong></div></div>{% endif %}
+<p class="receipt-status">{% if sale.status == 'Pending Payment' %}Present this receipt to the cashier. Medicine is released after payment.{% else %}PAID · Payment complete. The customer may collect their medicine.{% endif %}</p>
+<div class="form-actions no-print"><button class="save-button" onclick="window.print()" type="button">Print receipt</button>{% if can_take_payment %}<a class="action-button" href="{% url 'take_payment' sale.sale_id %}">Take payment</a>{% endif %}<a href="{% url 'records' 'sales' %}">Back to sales</a></div>
+</section>
+{% endblock %}
